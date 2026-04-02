@@ -1,0 +1,16 @@
+.DS_Store
+.env
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.db
+instance/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+storage/uploads/*
+!storage/uploads/.gitkeep

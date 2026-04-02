@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Employees | BBB Sangha Cash Tracker{% endblock %}
+{% block page_title %}Employees{% endblock %}
+{% block subtitle %}Manage employee names for salary tracking.{% endblock %}
+
+{% block content %}
+<section class="panel-grid two-col">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Add Employee</h2>
+    </div>
+    <form method="post" class="entity-form compact">
+      <label>
+        <span>Employee Name</span>
+        <input type="text" name="name" maxlength="120" placeholder="Enter employee name">
+        {% if errors.get('name') %}<small class="error">{{ errors['name'] }}</small>{% endif %}
+      </label>
+      <button class="btn btn-primary" type="submit">Add Employee</button>
+    </form>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Employee List</h2>
+    </div>
+    <div class="list-stack">
+      {% for item in employees %}
+        <div class="list-item plain">
+          <strong>{{ item.name }}</strong>
+          <form method="post" action="{{ url_for('web.delete_employee', employee_id=item.id) }}" onsubmit="return confirm('Delete this employee?');">
+            <button class="btn btn-small btn-danger" type="submit">Delete</button>
+          </form>
+        </div>
+      {% else %}
+        <p class="empty-state">No employees yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

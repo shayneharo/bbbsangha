@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Settings | BBB Sangha Cash Tracker{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block subtitle %}Maintain custom expense types and editable seafood product types.{% endblock %}
+
+{% block content %}
+<section class="panel-grid two-col">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Expense Types</h2>
+    </div>
+    <form method="post" class="entity-form compact">
+      <input type="hidden" name="kind" value="expense_type">
+      <label>
+        <span>New Expense Type</span>
+        <input type="text" name="name" maxlength="120" placeholder="Fuel, ice, market fee">
+        {% if errors.expense_type.get('name') %}<small class="error">{{ errors.expense_type['name'] }}</small>{% endif %}
+      </label>
+      <button class="btn btn-primary" type="submit">Add Expense Type</button>
+    </form>
+
+    <div class="list-stack">
+      {% for item in expense_types %}
+        <div class="list-item plain">
+          <strong>{{ item.name }}</strong>
+          <form method="post" action="{{ url_for('web.delete_expense_type', type_id=item.id) }}" onsubmit="return confirm('Delete this expense type?');">
+            <button class="btn btn-small btn-danger" type="submit">Delete</button>
+          </form>
+        </div>
+      {% else %}
+        <p class="empty-state">No expense types yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Product Types</h2>
+    </div>
+    <form method="post" class="entity-form compact">
+      <input type="hidden" name="kind" value="product_type">
+      <label>
+        <span>New Product Type</span>
+        <input type="text" name="name" maxlength="120" placeholder="Alimango, hipon, bangus">
+        {% if errors.product_type.get('name') %}<small class="error">{{ errors.product_type['name'] }}</small>{% endif %}
+      </label>
+      <button class="btn btn-primary" type="submit">Add Product Type</button>
+    </form>
+
+    <div class="list-stack">
+      {% for item in product_types %}
+        <div class="list-item plain">
+          <strong>{{ item.name }}</strong>
+          <form method="post" action="{{ url_for('web.delete_product_type', type_id=item.id) }}" onsubmit="return confirm('Delete this product type?');">
+            <button class="btn btn-small btn-danger" type="submit">Delete</button>
+          </form>
+        </div>
+      {% else %}
+        <p class="empty-state">No product types yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

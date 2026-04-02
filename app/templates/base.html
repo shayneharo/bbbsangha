@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}BBB Sangha Cash Tracker{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">BBB</span>
+        <div>
+          <strong>Sangha Cash Tracker</strong>
+          <small>Daily cash flow visibility</small>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="{{ url_for('web.dashboard') }}" class="{% if request.endpoint == 'web.dashboard' %}active{% endif %}">Dashboard</a>
+        <a href="{{ url_for('web.transactions') }}" class="{% if request.endpoint in ['web.transactions', 'web.create_transaction', 'web.edit_transaction', 'web.transaction_detail'] %}active{% endif %}">Transactions</a>
+        <a href="{{ url_for('web.expenses') }}" class="{% if request.endpoint in ['web.expenses', 'web.create_expense', 'web.edit_expense'] %}active{% endif %}">Expenses</a>
+        <a href="{{ url_for('web.sales') }}" class="{% if request.endpoint in ['web.sales', 'web.create_sale', 'web.edit_sale'] %}active{% endif %}">Sales</a>
+        <a href="{{ url_for('web.employees') }}" class="{% if request.endpoint in ['web.employees'] %}active{% endif %}">Employees</a>
+        <a href="{{ url_for('web.settings') }}" class="{% if request.endpoint in ['web.settings'] %}active{% endif %}">Settings</a>
+        <a href="{{ url_for('web.reports') }}" class="{% if request.endpoint == 'web.reports' %}active{% endif %}">Reports</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div>
+          <h1>{% block page_title %}BBB Sangha Cash Tracker{% endblock %}</h1>
+          <p class="subtitle">{% block subtitle %}Track cash, expenses, sales, and deposits in one place.{% endblock %}</p>
+        </div>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <dialog id="detail-modal" class="detail-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modal-title">Transaction details</h3>
+        <button type="button" class="icon-btn" data-close-modal>&times;</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </dialog>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

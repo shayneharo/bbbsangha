@@ -1,0 +1,71 @@
+CREATE DATABASE IF NOT EXISTS bbb_sangha_cash_tracker;
+USE bbb_sangha_cash_tracker;
+
+CREATE TABLE IF NOT EXISTS transactions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  date DATE NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  category VARCHAR(120) NOT NULL,
+  note TEXT NULL,
+  receipt_filename VARCHAR(255) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_transactions_date (date),
+  INDEX idx_transactions_type (type),
+  INDEX idx_transactions_category (category)
+);
+
+CREATE TABLE IF NOT EXISTS employees (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_employees_name (name)
+);
+
+CREATE TABLE IF NOT EXISTS expense_types (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_expense_types_name (name)
+);
+
+CREATE TABLE IF NOT EXISTS expenses (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  date DATE NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  note TEXT NULL,
+  receipt_filename VARCHAR(255) NULL,
+  is_salary BOOLEAN NOT NULL DEFAULT FALSE,
+  expense_type_id INT NULL,
+  employee_id INT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_expenses_expense_type FOREIGN KEY (expense_type_id) REFERENCES expense_types(id),
+  CONSTRAINT fk_expenses_employee FOREIGN KEY (employee_id) REFERENCES employees(id),
+  INDEX idx_expenses_date (date)
+);
+
+CREATE TABLE IF NOT EXISTS product_types (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_product_types_name (name)
+);
+
+CREATE TABLE IF NOT EXISTS sales (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  date DATE NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  quantity DECIMAL(12,2) NULL,
+  note TEXT NULL,
+  receipt_filename VARCHAR(255) NULL,
+  product_type_id INT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_sales_product_type FOREIGN KEY (product_type_id) REFERENCES product_types(id),
+  INDEX idx_sales_date (date)
+);

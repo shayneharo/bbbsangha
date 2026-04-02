@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction #{{ transaction.id }} | BBB Sangha Cash Tracker{% endblock %}
+{% block page_title %}Transaction #{{ transaction.id }}{% endblock %}
+{% block subtitle %}Full detail view for this transaction record.{% endblock %}
+
+{% block content %}
+<section class="panel detail-view">
+  <div class="detail-grid">
+    <div>
+      <span class="detail-label">Date</span>
+      <strong>{{ transaction.date.strftime('%B %d, %Y') }}</strong>
+    </div>
+    <div>
+      <span class="detail-label">Type</span>
+      <strong>{{ transaction.type|title }}</strong>
+    </div>
+    <div>
+      <span class="detail-label">Category</span>
+      <strong>{{ transaction.category }}</strong>
+    </div>
+    <div>
+      <span class="detail-label">Amount</span>
+      <strong>{{ transaction.amount|currency }}</strong>
+    </div>
+  </div>
+
+  <div class="detail-block">
+    <span class="detail-label">Note</span>
+    <p>{{ transaction.note or 'No note provided.' }}</p>
+  </div>
+
+  <div class="detail-block">
+    <span class="detail-label">Receipt</span>
+    {% if transaction.receipt_filename %}
+      <a class="btn btn-secondary" href="{{ url_for('web.uploaded_file', filename=transaction.receipt_filename) }}" target="_blank" rel="noopener">Open Receipt</a>
+    {% else %}
+      <p>No receipt uploaded.</p>
+    {% endif %}
+  </div>
+
+  <div class="form-actions">
+    <a class="btn btn-primary" href="{{ url_for('web.edit_transaction', transaction_id=transaction.id) }}">Edit Transaction</a>
+    <a class="btn btn-ghost" href="{{ url_for('web.transactions') }}">Back to Transactions</a>
+  </div>
+</section>
+{% endblock %}

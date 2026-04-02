@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Reports | BBB Sangha Cash Tracker{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block subtitle %}Review weekly, monthly, or custom date-range performance summaries.{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="panel-head">
+    <h2>Report Filters</h2>
+  </div>
+  <form method="get" class="filters">
+    <select name="period">
+      <option value="weekly" {% if period == 'weekly' %}selected{% endif %}>Weekly</option>
+      <option value="monthly" {% if period == 'monthly' %}selected{% endif %}>Monthly</option>
+      <option value="range" {% if period == 'range' %}selected{% endif %}>Date range</option>
+    </select>
+    <input type="date" name="start_date" value="{{ request.args.get('start_date', payload.start_date.isoformat()) }}">
+    <input type="date" name="end_date" value="{{ request.args.get('end_date', payload.end_date.isoformat()) }}">
+    <button class="btn btn-primary" type="submit">Generate</button>
+  </form>
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+</section>
+
+<section class="card-grid compact-grid">
+  <article class="metric-card report-card"><span>Received</span><strong>{{ payload.totals.received|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Sent</span><strong>{{ payload.totals.sent|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Deposited</span><strong>{{ payload.totals.deposited|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Expenses</span><strong>{{ payload.totals.expenses|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Sales</span><strong>{{ payload.totals.sales|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Net Change</span><strong>{{ payload.totals.balance_change|currency }}</strong></article>
+</section>
+
+<section class="panel-grid">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Transactions in Period</h2>
+      <small>{{ payload.start_date.strftime('%b %d, %Y') }} to {{ payload.end_date.strftime('%b %d, %Y') }}</small>
+    </div>
+    <div class="list-stack">
+      {% for item in payload.transactions %}
+        <div class="list-item plain">
+          <div>
+            <strong>{{ item.category }}</strong>
+            <small>{{ item.date.strftime('%b %d, %Y') }} • {{ item.type|title }}</small>
+          </div>
+          <span>{{ item.amount|currency }}</span>
+        </div>
+      {% else %}
+        <p class="empty-state">No transactions in this period.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Expenses in Period</h2>
+    </div>
+    <div class="list-stack">
+      {% for item in payload.expenses %}
+        <div class="list-item plain">
+          <div>
+            <strong>{% if item.is_salary %}Salary{% else %}{{ item.expense_type.name if item.expense_type else 'Expense' }}{% endif %}</strong>
+            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+          </div>
+          <span>{{ item.amount|currency }}</span>
+        </div>
+      {% else %}
+        <p class="empty-state">No expenses in this period.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Sales in Period</h2>
+    </div>
+    <div class="list-stack">
+      {% for item in payload.sales %}
+        <div class="list-item plain">
+          <div>
+            <strong>{{ item.product_type.name }}</strong>
+            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+          </div>
+          <span>{{ item.amount|currency }}</span>
+        </div>
+      {% else %}
+        <p class="empty-state">No sales in this period.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

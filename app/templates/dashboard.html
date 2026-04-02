@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | BBB Sangha Cash Tracker{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block subtitle %}Quick visibility into cash movement, spending, and seafood sales.{% endblock %}
+
+{% block content %}
+<section class="card-grid">
+  <a class="metric-card received" href="{{ url_for('web.transactions', type='received') }}">
+    <span>Total Received</span>
+    <strong>{{ totals.total_received|currency }}</strong>
+  </a>
+  <a class="metric-card sent" href="{{ url_for('web.transactions', type='sent') }}">
+    <span>Total Sent</span>
+    <strong>{{ totals.total_sent|currency }}</strong>
+  </a>
+  <a class="metric-card deposited" href="{{ url_for('web.transactions', type='deposited') }}">
+    <span>Total Deposited</span>
+    <strong>{{ totals.total_deposited|currency }}</strong>
+  </a>
+  <a class="metric-card balance" href="{{ url_for('web.reports') }}">
+    <span>Current Balance</span>
+    <strong>{{ totals.current_balance|currency }}</strong>
+  </a>
+  <a class="metric-card expense" href="{{ url_for('web.expenses') }}">
+    <span>Total Expenses</span>
+    <strong>{{ totals.total_expenses|currency }}</strong>
+  </a>
+  <a class="metric-card sales" href="{{ url_for('web.sales') }}">
+    <span>Total Sales</span>
+    <strong>{{ totals.total_sales|currency }}</strong>
+  </a>
+</section>
+
+<section class="panel-grid">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Recent Transactions</h2>
+      <a class="btn btn-secondary" href="{{ url_for('web.create_transaction') }}" aria-label="Add transaction" title="Add transaction">+</a>
+    </div>
+    <div class="list-stack">
+      {% for item in recent_transactions %}
+        <a class="list-item" href="{{ url_for('web.transaction_detail', transaction_id=item.id) }}">
+          <div>
+            <strong>{{ item.category }}</strong>
+            <small>{{ item.date.strftime('%b %d, %Y') }} • {{ item.type|title }}</small>
+          </div>
+          <span>{{ item.amount|currency }}</span>
+        </a>
+      {% else %}
+        <p class="empty-state">No transactions yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Recent Expenses</h2>
+      <a class="btn btn-secondary" href="{{ url_for('web.create_expense') }}">Add Expense</a>
+    </div>
+    <div class="list-stack">
+      {% for item in recent_expenses %}
+        <div class="list-item plain">
+          <div>
+            <strong>{% if item.is_salary %}Salary{% else %}{{ item.expense_type.name if item.expense_type else 'Expense' }}{% endif %}</strong>
+            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+          </div>
+          <span>{{ item.amount|currency }}</span>
+        </div>
+      {% else %}
+        <p class="empty-state">No expenses yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Recent Sales</h2>
+      <a class="btn btn-secondary" href="{{ url_for('web.create_sale') }}">Add Sale</a>
+    </div>
+    <div class="list-stack">
+      {% for item in recent_sales %}
+        <div class="list-item plain">
+          <div>
+            <strong>{{ item.product_type.name }}</strong>
+            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+          </div>
+          <span>{{ item.amount|currency }}</span>
+        </div>
+      {% else %}
+        <p class="empty-state">No sales yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

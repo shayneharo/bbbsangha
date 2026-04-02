@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Expense | BBB Sangha Cash Tracker{% endblock %}
+{% block page_title %}{{ action }} Expense{% endblock %}
+{% block subtitle %}Capture regular expenses and salary payouts with strong validation.{% endblock %}
+
+{% block content %}
+<section class="form-panel">
+  <form method="post" enctype="multipart/form-data" class="entity-form">
+    {% set selected_salary = form_data.get('is_salary') or ('true' if expense and expense.is_salary else 'false') %}
+
+    <div class="switch-row">
+      <label class="switch-option">
+        <input type="radio" name="is_salary" value="false" {% if selected_salary != 'true' %}checked{% endif %}>
+        <span>Regular Expense</span>
+      </label>
+      <label class="switch-option">
+        <input type="radio" name="is_salary" value="true" {% if selected_salary == 'true' %}checked{% endif %}>
+        <span>Salary Record</span>
+      </label>
+    </div>
+
+    <div class="field-grid">
+      <label>
+        <span>Date</span>
+        <input type="date" name="date" value="{{ form_data.get('date') or (expense.date.isoformat() if expense else default_date) }}">
+        {% if errors.get('date') %}<small class="error">{{ errors['date'] }}</small>{% endif %}
+      </label>
+
+      <label>
+        <span>Amount</span>
+        <input type="number" step="0.01" min="0.01" name="amount" value="{{ form_data.get('amount') or (expense.amount if expense else '') }}">
+        {% if errors.get('amount') %}<small class="error">{{ errors['amount'] }}</small>{% endif %}
+      </label>
+    </div>
+
+    <div class="field-grid">
+      <label data-toggle-section="expense-fields">
+        <span>Expense Type</span>
+        <select name="expense_type_id">
+          <option value="">Select expense type</option>
+          {% set selected_expense_type = form_data.get('expense_type_id') or (expense.expense_type_id if expense else '') %}
+          {% for item in expense_types %}
+            <option value="{{ item.id }}" {% if selected_expense_type|string == item.id|string %}selected{% endif %}>{{ item.name }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.get('expense_type_id') %}<small class="error">{{ errors['expense_type_id'] }}</small>{% endif %}
+      </label>
+
+      <label data-toggle-section="salary-fields">
+        <span>Employee</span>
+        <select name="employee_id">
+          <option value="">Select employee</option>
+          {% set selected_employee = form_data.get('employee_id') or (expense.employee_id if expense else '') %}
+          {% for item in employees %}
+            <option value="{{ item.id }}" {% if selected_employee|string == item.id|string %}selected{% endif %}>{{ item.name }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.get('employee_id') %}<small class="error">{{ errors['employee_id'] }}</small>{% endif %}
+      </label>
+    </div>
+
+    <label>
+      <span>Note</span>
+      <textarea name="note" rows="5" maxlength="2000">{{ form_data.get('note') or (expense.note if expense else '') }}</textarea>
+    </label>
+
+    <label>
+      <span>Receipt</span>
+      <input type="file" name="receipt" accept=".png,.jpg,.jpeg,.pdf,.webp">
+      {% if expense and expense.receipt_filename %}
+        <small>Current receipt: <a href="{{ url_for('web.uploaded_file', filename=expense.receipt_filename) }}" target="_blank" rel="noopener">View receipt</a></small>
+      {% endif %}
+      {% if errors.get('receipt') %}<small class="error">{{ errors['receipt'] }}</small>{% endif %}
+    </label>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">{{ action }} Expense</button>
+      <a class="btn btn-ghost" href="{{ url_for('web.expenses') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

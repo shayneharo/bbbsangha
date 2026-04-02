@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Transaction | BBB Sangha Cash Tracker{% endblock %}
+{% block page_title %}{{ action }} Transaction{% endblock %}
+{% block subtitle %}Capture the exact movement of cash with category, note, and receipt.{% endblock %}
+
+{% block content %}
+<section class="form-panel">
+  <form method="post" enctype="multipart/form-data" class="entity-form">
+    <div class="field-grid">
+      <label>
+        <span>Date</span>
+        <input type="date" name="date" value="{{ form_data.get('date') or (transaction.date.isoformat() if transaction else default_date) }}">
+        {% if errors.get('date') %}<small class="error">{{ errors['date'] }}</small>{% endif %}
+      </label>
+
+      <label>
+        <span>Type</span>
+        <select name="type">
+          {% for tx_type in transaction_types %}
+            {% set selected_type = form_data.get('type') or (transaction.type if transaction else '') %}
+            <option value="{{ tx_type }}" {% if selected_type == tx_type %}selected{% endif %}>{{ tx_type|title }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.get('type') %}<small class="error">{{ errors['type'] }}</small>{% endif %}
+      </label>
+
+      <label>
+        <span>Amount</span>
+        <input type="number" step="0.01" min="0.01" name="amount" value="{{ form_data.get('amount') or (transaction.amount if transaction else '') }}">
+        {% if errors.get('amount') %}<small class="error">{{ errors['amount'] }}</small>{% endif %}
+      </label>
+
+      <label>
+        <span>Category</span>
+        <input type="text" name="category" maxlength="120" value="{{ form_data.get('category') or (transaction.category if transaction else '') }}" placeholder="Cash in, transfer, bank deposit">
+        {% if errors.get('category') %}<small class="error">{{ errors['category'] }}</small>{% endif %}
+      </label>
+    </div>
+
+    <label>
+      <span>Note</span>
+      <textarea name="note" rows="5" maxlength="2000" placeholder="Add a note for context">{{ form_data.get('note') or (transaction.note if transaction else '') }}</textarea>
+      {% if errors.get('note') %}<small class="error">{{ errors['note'] }}</small>{% endif %}
+    </label>
+
+    <label>
+      <span>Receipt</span>
+      <input type="file" name="receipt" accept=".png,.jpg,.jpeg,.pdf,.webp">
+      {% if transaction and transaction.receipt_filename %}
+        <small>Current receipt: <a href="{{ url_for('web.uploaded_file', filename=transaction.receipt_filename) }}" target="_blank" rel="noopener">View receipt</a></small>
+      {% endif %}
+      {% if errors.get('receipt') %}<small class="error">{{ errors['receipt'] }}</small>{% endif %}
+    </label>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">{{ action }} Transaction</button>
+      <a class="btn btn-ghost" href="{{ url_for('web.transactions') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
