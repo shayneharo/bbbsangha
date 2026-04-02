@@ -21,14 +21,20 @@ def get_dashboard_totals():
         db.session.query(func.sum(Transaction.amount)).filter(Transaction.type == "deposited")
     )
     total_expenses = _sum(db.session.query(func.sum(Expense.amount)))
+    balance_expenses = _sum(
+        db.session.query(func.sum(Expense.amount)).filter(Expense.include_in_balance.is_(True))
+    )
     total_sales = _sum(db.session.query(func.sum(Sale.amount)))
-    current_balance = total_received + total_sales - total_sent - total_deposited - total_expenses
+    current_balance = (
+        total_received + total_sales - total_sent - total_deposited - balance_expenses
+    )
 
     return {
         "total_received": total_received,
         "total_sent": total_sent,
         "total_deposited": total_deposited,
         "total_expenses": total_expenses,
+        "balance_expenses": balance_expenses,
         "total_sales": total_sales,
         "current_balance": current_balance,
     }

@@ -231,6 +231,7 @@ def create_expense():
                     note=cleaned["note"],
                     receipt_filename=_handle_receipt_upload(request.files.get("receipt")),
                     is_salary=cleaned["is_salary"],
+                    include_in_balance=cleaned["include_in_balance"],
                     employee=cleaned["employee"],
                     expense_type=cleaned["expense_type"],
                 )
@@ -271,6 +272,7 @@ def edit_expense(expense_id):
                 expense.amount = cleaned["amount"]
                 expense.note = cleaned["note"]
                 expense.is_salary = cleaned["is_salary"]
+                expense.include_in_balance = cleaned["include_in_balance"]
                 expense.employee = cleaned["employee"]
                 expense.expense_type = cleaned["expense_type"]
                 db.session.commit()

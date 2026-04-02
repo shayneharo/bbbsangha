@@ -60,6 +60,16 @@
       </label>
     </div>
 
+    {% set selected_include = form_data.get('include_in_balance') or ('true' if not expense or expense.include_in_balance else 'false') %}
+    <label>
+      <span>Reduce current balance?</span>
+      <select name="include_in_balance">
+        <option value="true" {% if selected_include == 'true' %}selected{% endif %}>Yes, subtract it from current balance</option>
+        <option value="false" {% if selected_include == 'false' %}selected{% endif %}>No, keep it as historical record only</option>
+      </select>
+      <small>Use "No" for past records you want to save without lowering today’s balance.</small>
+    </label>
+
     <label>
       <span>Note</span>
       <textarea name="note" rows="5" maxlength="2000">{{ form_data.get('note') or (expense.note if expense else '') }}</textarea>

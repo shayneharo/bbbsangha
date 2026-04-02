@@ -47,6 +47,7 @@ class Expense(TimestampMixin, db.Model):
     note = db.Column(db.Text, nullable=True)
     receipt_filename = db.Column(db.String(255), nullable=True)
     is_salary = db.Column(db.Boolean, nullable=False, default=False)
+    include_in_balance = db.Column(db.Boolean, nullable=False, default=True)
     expense_type_id = db.Column(db.Integer, db.ForeignKey("expense_types.id"), nullable=True)
     employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"), nullable=True)
 

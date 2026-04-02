@@ -1,10 +1,29 @@
 from pathlib import Path
 
 from flask import Flask
+from sqlalchemy import inspect, text
 
 from .config import Config
 from .extensions import db
 from .routes.web import web
+
+
+def _ensure_schema_updates():
+    inspector = inspect(db.engine)
+    tables = inspector.get_table_names()
+
+    if "expenses" not in tables:
+        return
+
+    expense_columns = {column["name"] for column in inspector.get_columns("expenses")}
+    if "include_in_balance" not in expense_columns:
+        db.session.execute(
+            text(
+                "ALTER TABLE expenses "
+                "ADD COLUMN include_in_balance BOOLEAN NOT NULL DEFAULT 1"
+            )
+        )
+        db.session.commit()
 
 
 def create_app(config_class=Config):
@@ -21,5 +40,6 @@ def create_app(config_class=Config):
         from . import models  # noqa: F401
 
         db.create_all()
+        _ensure_schema_updates()
 
     return app

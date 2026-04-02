@@ -32,6 +32,7 @@
           <th>Type</th>
           <th>Employee</th>
           <th>Amount</th>
+          <th>Balance</th>
           <th>Receipt</th>
           <th>Actions</th>
         </tr>
@@ -43,6 +44,7 @@
             <td data-label="Type">{% if item.is_salary %}Salary{% else %}{{ item.expense_type.name if item.expense_type else 'Expense' }}{% endif %}</td>
             <td data-label="Employee">{{ item.employee.name if item.employee else 'N/A' }}</td>
             <td data-label="Amount">{{ item.amount|currency }}</td>
+            <td data-label="Balance">{% if item.include_in_balance %}Included{% else %}Historical only{% endif %}</td>
             <td data-label="Receipt">
               {% if item.receipt_filename %}
                 <a href="{{ url_for('web.uploaded_file', filename=item.receipt_filename) }}" target="_blank" rel="noopener">View</a>
@@ -61,7 +63,7 @@
           </tr>
         {% else %}
           <tr>
-            <td colspan="6" class="empty-cell no-mobile-label">No expenses found.</td>
+            <td colspan="7" class="empty-cell no-mobile-label">No expenses found.</td>
           </tr>
         {% endfor %}
       </tbody>

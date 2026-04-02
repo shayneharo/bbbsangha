@@ -73,6 +73,7 @@ def validate_expense_form(form):
 
     is_salary = form.get("is_salary") == "true"
     cleaned["is_salary"] = is_salary
+    cleaned["include_in_balance"] = form.get("include_in_balance", "true") != "false"
 
     expense_type_id = (form.get("expense_type_id") or "").strip()
     employee_id = (form.get("employee_id") or "").strip()

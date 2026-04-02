@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS expenses (
   note TEXT NULL,
   receipt_filename VARCHAR(255) NULL,
   is_salary BOOLEAN NOT NULL DEFAULT FALSE,
+  include_in_balance BOOLEAN NOT NULL DEFAULT TRUE,
   expense_type_id INT NULL,
   employee_id INT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
