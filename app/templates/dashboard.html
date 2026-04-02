@@ -23,12 +23,20 @@
     <strong>{{ totals.current_balance|currency }}</strong>
   </a>
   <a class="metric-card expense" href="{{ url_for('web.expenses') }}">
-    <span>Total Expenses</span>
-    <strong>{{ totals.total_expenses|currency }}</strong>
+    <span>Live Expenses</span>
+    <strong>{{ totals.balance_expenses|currency }}</strong>
   </a>
   <a class="metric-card sales" href="{{ url_for('web.sales') }}">
-    <span>Total Sales</span>
+    <span>Live Sales</span>
     <strong>{{ totals.total_sales|currency }}</strong>
+  </a>
+  <a class="metric-card expense" href="{{ url_for('web.expenses') }}">
+    <span>Old Expenses</span>
+    <strong>{{ totals.historical_expenses|currency }}</strong>
+  </a>
+  <a class="metric-card sales" href="{{ url_for('web.sales') }}">
+    <span>Sales Not in Cash</span>
+    <strong>{{ totals.record_only_sales|currency }}</strong>
   </a>
 </section>
 

@@ -24,8 +24,12 @@ def get_dashboard_totals():
     balance_expenses = _sum(
         db.session.query(func.sum(Expense.amount)).filter(Expense.include_in_balance.is_(True))
     )
+    historical_expenses = total_expenses - balance_expenses
     total_sales = _sum(
         db.session.query(func.sum(Sale.amount)).filter(Sale.include_in_totals.is_(True))
+    )
+    record_only_sales = _sum(
+        db.session.query(func.sum(Sale.amount)).filter(Sale.include_in_totals.is_(False))
     )
     current_balance = (
         total_received + total_sales - total_sent - total_deposited - balance_expenses
@@ -37,6 +41,8 @@ def get_dashboard_totals():
         "total_deposited": total_deposited,
         "total_expenses": total_expenses,
         "balance_expenses": balance_expenses,
+        "historical_expenses": historical_expenses,
         "total_sales": total_sales,
+        "record_only_sales": record_only_sales,
         "current_balance": current_balance,
     }

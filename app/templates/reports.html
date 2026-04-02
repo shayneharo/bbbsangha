@@ -28,8 +28,10 @@
   <article class="metric-card report-card"><span>Received</span><strong>{{ payload.totals.received|currency }}</strong></article>
   <article class="metric-card report-card"><span>Sent</span><strong>{{ payload.totals.sent|currency }}</strong></article>
   <article class="metric-card report-card"><span>Deposited</span><strong>{{ payload.totals.deposited|currency }}</strong></article>
-  <article class="metric-card report-card"><span>Expenses</span><strong>{{ payload.totals.expenses|currency }}</strong></article>
-  <article class="metric-card report-card"><span>Sales</span><strong>{{ payload.totals.sales|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Live Expenses</span><strong>{{ payload.totals.live_expenses|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Old Expenses</span><strong>{{ payload.totals.historical_expenses|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Live Sales</span><strong>{{ payload.totals.live_sales|currency }}</strong></article>
+  <article class="metric-card report-card"><span>Sales Not in Cash</span><strong>{{ payload.totals.record_only_sales|currency }}</strong></article>
   <article class="metric-card report-card"><span>Net Change</span><strong>{{ payload.totals.balance_change|currency }}</strong></article>
 </section>
 
@@ -63,7 +65,10 @@
         <div class="list-item plain">
           <div>
             <strong>{% if item.is_salary %}Salary{% else %}{{ item.expense_type.name if item.expense_type else 'Expense' }}{% endif %}</strong>
-            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+            <small>
+              {{ item.date.strftime('%b %d, %Y') }}
+              {% if not item.include_in_balance %} • Old record only{% endif %}
+            </small>
           </div>
           <span>{{ item.amount|currency }}</span>
         </div>
@@ -82,7 +87,10 @@
         <div class="list-item plain">
           <div>
             <strong>{{ item.product_type.name }}</strong>
-            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+            <small>
+              {{ item.date.strftime('%b %d, %Y') }}
+              {% if not item.include_in_totals %} • Not in cash{% endif %}
+            </small>
           </div>
           <span>{{ item.amount|currency }}</span>
         </div>

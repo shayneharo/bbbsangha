@@ -27,8 +27,18 @@ def build_report_payload(period, start_str=None, end_str=None):
         "deposited": sum(item.amount for item in transactions if item.type == "deposited"),
         "expenses": sum(item.amount for item in expenses),
         "sales": sum(item.amount for item in sales),
+        "live_expenses": sum(item.amount for item in expenses if item.include_in_balance),
+        "historical_expenses": sum(item.amount for item in expenses if not item.include_in_balance),
+        "live_sales": sum(item.amount for item in sales if item.include_in_totals),
+        "record_only_sales": sum(item.amount for item in sales if not item.include_in_totals),
     }
-    totals["balance_change"] = totals["received"] + totals["sales"] - totals["sent"] - totals["deposited"] - totals["expenses"]
+    totals["balance_change"] = (
+        totals["received"]
+        + totals["live_sales"]
+        - totals["sent"]
+        - totals["deposited"]
+        - totals["live_expenses"]
+    )
 
     return {
         "start_date": start_date,
