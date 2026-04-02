@@ -86,7 +86,9 @@ def _apply_sale_filters():
 
     if search:
         like = f"%{search}%"
-        query = query.filter(or_(Sale.note.ilike(like), ProductType.name.ilike(like)))
+        query = query.filter(
+            or_(Sale.note.ilike(like), Sale.sold_to.ilike(like), ProductType.name.ilike(like))
+        )
     if start_date:
         query = query.filter(Sale.date >= start_date)
     if end_date:
@@ -232,6 +234,8 @@ def create_expense():
                     receipt_filename=_handle_receipt_upload(request.files.get("receipt")),
                     is_salary=cleaned["is_salary"],
                     include_in_balance=cleaned["include_in_balance"],
+                    unit_type=cleaned["unit_type"],
+                    unit_quantity=cleaned["unit_quantity"],
                     employee=cleaned["employee"],
                     expense_type=cleaned["expense_type"],
                 )
@@ -273,6 +277,8 @@ def edit_expense(expense_id):
                 expense.note = cleaned["note"]
                 expense.is_salary = cleaned["is_salary"]
                 expense.include_in_balance = cleaned["include_in_balance"]
+                expense.unit_type = cleaned["unit_type"]
+                expense.unit_quantity = cleaned["unit_quantity"]
                 expense.employee = cleaned["employee"]
                 expense.expense_type = cleaned["expense_type"]
                 db.session.commit()
@@ -321,8 +327,11 @@ def create_sale():
                     date=cleaned["date"],
                     amount=cleaned["amount"],
                     quantity=cleaned["quantity"],
+                    unit_type=cleaned["unit_type"],
+                    sold_to=cleaned["sold_to"],
                     note=cleaned["note"],
                     receipt_filename=_handle_receipt_upload(request.files.get("receipt")),
+                    include_in_totals=cleaned["include_in_totals"],
                     product_type=cleaned["product_type"],
                 )
                 db.session.add(sale)
@@ -359,7 +368,10 @@ def edit_sale(sale_id):
                 sale.date = cleaned["date"]
                 sale.amount = cleaned["amount"]
                 sale.quantity = cleaned["quantity"]
+                sale.unit_type = cleaned["unit_type"]
+                sale.sold_to = cleaned["sold_to"]
                 sale.note = cleaned["note"]
+                sale.include_in_totals = cleaned["include_in_totals"]
                 sale.product_type = cleaned["product_type"]
                 db.session.commit()
                 flash("Sale updated successfully.", "success")

@@ -5,6 +5,7 @@ from .utils import parse_date
 
 
 TRANSACTION_TYPES = {"received", "sent", "deposited"}
+UNIT_TYPES = {"sack", "banyera", "lata", "kg"}
 
 
 def _clean_text(value, max_length=255):
@@ -74,6 +75,12 @@ def validate_expense_form(form):
     is_salary = form.get("is_salary") == "true"
     cleaned["is_salary"] = is_salary
     cleaned["include_in_balance"] = form.get("include_in_balance", "true") != "false"
+    unit_type = _clean_text(form.get("unit_type"), 20).lower()
+    if unit_type and unit_type not in UNIT_TYPES:
+        errors["unit_type"] = "Select a valid unit."
+        cleaned["unit_type"] = None
+    else:
+        cleaned["unit_type"] = unit_type or None
 
     expense_type_id = (form.get("expense_type_id") or "").strip()
     employee_id = (form.get("employee_id") or "").strip()
@@ -100,6 +107,18 @@ def validate_expense_form(form):
             else:
                 cleaned["expense_type"] = expense_type
         cleaned["employee"] = employee
+
+    unit_quantity_raw = (form.get("unit_quantity") or "").strip()
+    if cleaned["unit_type"]:
+        if not unit_quantity_raw:
+            errors["unit_quantity"] = f"Enter how many {cleaned['unit_type']}."
+        else:
+            try:
+                cleaned["unit_quantity"] = _clean_amount(unit_quantity_raw, "Unit quantity")
+            except ValueError as exc:
+                errors["unit_quantity"] = str(exc)
+    else:
+        cleaned["unit_quantity"] = None
 
     note = _clean_text(form.get("note"), 2000)
     cleaned["note"] = note or None
@@ -132,13 +151,30 @@ def validate_sale_form(form):
             cleaned["product_type"] = product_type
 
     quantity_raw = (form.get("quantity") or "").strip()
-    if quantity_raw:
-        try:
-            cleaned["quantity"] = _clean_amount(quantity_raw, "Quantity")
-        except ValueError as exc:
-            errors["quantity"] = str(exc)
+    unit_type = _clean_text(form.get("unit_type"), 20).lower()
+    if unit_type and unit_type not in UNIT_TYPES:
+        errors["unit_type"] = "Select a valid unit."
+        cleaned["unit_type"] = None
+    else:
+        cleaned["unit_type"] = unit_type or None
+
+    if cleaned["unit_type"]:
+        if not quantity_raw:
+            errors["quantity"] = f"Enter how many {cleaned['unit_type']}."
+        else:
+            try:
+                cleaned["quantity"] = _clean_amount(quantity_raw, "Quantity")
+            except ValueError as exc:
+                errors["quantity"] = str(exc)
     else:
         cleaned["quantity"] = None
+
+    try:
+        cleaned["sold_to"] = _clean_text(form.get("sold_to"), 120) or None
+    except ValueError as exc:
+        errors["sold_to"] = str(exc)
+
+    cleaned["include_in_totals"] = form.get("include_in_totals", "true") != "false"
 
     note = _clean_text(form.get("note"), 2000)
     cleaned["note"] = note or None

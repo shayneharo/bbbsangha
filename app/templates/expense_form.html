@@ -58,6 +58,25 @@
         </select>
         {% if errors.get('employee_id') %}<small class="error">{{ errors['employee_id'] }}</small>{% endif %}
       </label>
+
+      <label>
+        <span>Unit Type</span>
+        {% set selected_unit = form_data.get('unit_type') or (expense.unit_type if expense else '') %}
+        <select name="unit_type" data-unit-select data-unit-target="expense-unit-quantity">
+          <option value="">None</option>
+          <option value="sack" {% if selected_unit == 'sack' %}selected{% endif %}>Sack</option>
+          <option value="banyera" {% if selected_unit == 'banyera' %}selected{% endif %}>Banyera</option>
+          <option value="lata" {% if selected_unit == 'lata' %}selected{% endif %}>Lata</option>
+          <option value="kg" {% if selected_unit == 'kg' %}selected{% endif %}>Kg</option>
+        </select>
+        {% if errors.get('unit_type') %}<small class="error">{{ errors['unit_type'] }}</small>{% endif %}
+      </label>
+
+      <label data-unit-field id="expense-unit-quantity">
+        <span>How many?</span>
+        <input type="number" step="0.01" min="0.01" name="unit_quantity" value="{{ form_data.get('unit_quantity') or (expense.unit_quantity if expense and expense.unit_quantity is not none else '') }}" placeholder="Enter quantity">
+        {% if errors.get('unit_quantity') %}<small class="error">{{ errors['unit_quantity'] }}</small>{% endif %}
+      </label>
     </div>
 
     {% set selected_include = form_data.get('include_in_balance') or ('true' if not expense or expense.include_in_balance else 'false') %}

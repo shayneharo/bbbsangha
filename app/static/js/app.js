@@ -78,3 +78,21 @@ document.querySelectorAll('input[name="is_salary"]').forEach((input) => {
 });
 
 syncExpenseMode();
+
+function syncUnitFields() {
+  document.querySelectorAll("[data-unit-select]").forEach((select) => {
+    const targetId = select.dataset.unitTarget;
+    const field = targetId ? document.getElementById(targetId) : null;
+    if (!field) {
+      return;
+    }
+    const hasUnit = Boolean(select.value);
+    field.hidden = !hasUnit;
+  });
+}
+
+document.querySelectorAll("[data-unit-select]").forEach((select) => {
+  select.addEventListener("change", syncUnitFields);
+});
+
+syncUnitFields();

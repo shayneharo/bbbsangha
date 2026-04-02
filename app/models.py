@@ -48,6 +48,8 @@ class Expense(TimestampMixin, db.Model):
     receipt_filename = db.Column(db.String(255), nullable=True)
     is_salary = db.Column(db.Boolean, nullable=False, default=False)
     include_in_balance = db.Column(db.Boolean, nullable=False, default=True)
+    unit_type = db.Column(db.String(20), nullable=True)
+    unit_quantity = db.Column(db.Numeric(12, 2), nullable=True)
     expense_type_id = db.Column(db.Integer, db.ForeignKey("expense_types.id"), nullable=True)
     employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"), nullable=True)
 
@@ -70,8 +72,11 @@ class Sale(TimestampMixin, db.Model):
     date = db.Column(db.Date, nullable=False, index=True)
     amount = db.Column(db.Numeric(12, 2), nullable=False)
     quantity = db.Column(db.Numeric(12, 2), nullable=True)
+    unit_type = db.Column(db.String(20), nullable=True)
+    sold_to = db.Column(db.String(120), nullable=True, index=True)
     note = db.Column(db.Text, nullable=True)
     receipt_filename = db.Column(db.String(255), nullable=True)
+    include_in_totals = db.Column(db.Boolean, nullable=False, default=True)
     product_type_id = db.Column(db.Integer, db.ForeignKey("product_types.id"), nullable=False)
 
     product_type = db.relationship("ProductType", back_populates="sales")

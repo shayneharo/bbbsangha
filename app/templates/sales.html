@@ -12,7 +12,7 @@
   </div>
 
   <form class="filters" method="get">
-    <input type="text" name="search" placeholder="Search product or note" value="{{ filters.get('search', '') }}">
+    <input type="text" name="search" placeholder="Search product, employee/place, or note" value="{{ filters.get('search', '') }}">
     <input type="date" name="start_date" value="{{ filters.get('start_date', '') }}">
     <input type="date" name="end_date" value="{{ filters.get('end_date', '') }}">
     <button class="btn btn-primary" type="submit">Apply</button>
@@ -25,8 +25,10 @@
         <tr>
           <th>Date</th>
           <th>Product</th>
-          <th>Quantity</th>
+          <th>Employee / Place</th>
+          <th>Unit</th>
           <th>Amount</th>
+          <th>Status</th>
           <th>Receipt</th>
           <th>Actions</th>
         </tr>
@@ -36,8 +38,22 @@
           <tr>
             <td data-label="Date">{{ item.date.strftime('%b %d, %Y') }}</td>
             <td data-label="Product">{{ item.product_type.name }}</td>
-            <td data-label="Quantity">{{ item.quantity if item.quantity is not none else 'N/A' }}</td>
+            <td data-label="Employee / Place">{{ item.sold_to or 'N/A' }}</td>
+            <td data-label="Unit">
+              {% if item.unit_type and item.quantity is not none %}
+                {{ item.quantity }} {{ item.unit_type|title }}
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
             <td data-label="Amount">{{ item.amount|currency }}</td>
+            <td data-label="Status">
+              {% if item.include_in_totals %}
+                <span>Included</span>
+              {% else %}
+                <span class="muted">Records only</span>
+              {% endif %}
+            </td>
             <td data-label="Receipt">
               {% if item.receipt_filename %}
                 <a href="{{ url_for('web.uploaded_file', filename=item.receipt_filename) }}" target="_blank" rel="noopener">View</a>
@@ -56,7 +72,7 @@
           </tr>
         {% else %}
           <tr>
-            <td colspan="6" class="empty-cell no-mobile-label">No sales found.</td>
+            <td colspan="8" class="empty-cell no-mobile-label">No sales found.</td>
           </tr>
         {% endfor %}
       </tbody>

@@ -31,6 +31,7 @@
           <th>Date</th>
           <th>Type</th>
           <th>Employee</th>
+          <th>Unit</th>
           <th>Amount</th>
           <th>Balance</th>
           <th>Receipt</th>
@@ -43,6 +44,13 @@
             <td data-label="Date">{{ item.date.strftime('%b %d, %Y') }}</td>
             <td data-label="Type">{% if item.is_salary %}Salary{% else %}{{ item.expense_type.name if item.expense_type else 'Expense' }}{% endif %}</td>
             <td data-label="Employee">{{ item.employee.name if item.employee else 'N/A' }}</td>
+            <td data-label="Unit">
+              {% if item.unit_type and item.unit_quantity is not none %}
+                {{ item.unit_quantity }} {{ item.unit_type|title }}
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
             <td data-label="Amount">{{ item.amount|currency }}</td>
             <td data-label="Balance">{% if item.include_in_balance %}Included{% else %}Historical only{% endif %}</td>
             <td data-label="Receipt">
@@ -63,7 +71,7 @@
           </tr>
         {% else %}
           <tr>
-            <td colspan="7" class="empty-cell no-mobile-label">No expenses found.</td>
+            <td colspan="8" class="empty-cell no-mobile-label">No expenses found.</td>
           </tr>
         {% endfor %}
       </tbody>

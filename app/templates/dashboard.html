@@ -63,7 +63,10 @@
         <div class="list-item plain">
           <div>
             <strong>{% if item.is_salary %}Salary{% else %}{{ item.expense_type.name if item.expense_type else 'Expense' }}{% endif %}</strong>
-            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+            <small>
+              {{ item.date.strftime('%b %d, %Y') }}
+              {% if item.unit_type and item.unit_quantity is not none %} • {{ item.unit_quantity }} {{ item.unit_type|title }}{% endif %}
+            </small>
           </div>
           <span>{{ item.amount|currency }}</span>
         </div>
@@ -83,7 +86,12 @@
         <div class="list-item plain">
           <div>
             <strong>{{ item.product_type.name }}</strong>
-            <small>{{ item.date.strftime('%b %d, %Y') }}</small>
+            <small>
+              {{ item.date.strftime('%b %d, %Y') }}
+              {% if item.unit_type and item.quantity is not none %} • {{ item.quantity }} {{ item.unit_type|title }}{% endif %}
+              {% if item.sold_to %} • {{ item.sold_to }}{% endif %}
+              {% if not item.include_in_totals %} • Records only{% endif %}
+            </small>
           </div>
           <span>{{ item.amount|currency }}</span>
         </div>

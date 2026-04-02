@@ -12,18 +12,47 @@ def _ensure_schema_updates():
     inspector = inspect(db.engine)
     tables = inspector.get_table_names()
 
-    if "expenses" not in tables:
-        return
-
-    expense_columns = {column["name"] for column in inspector.get_columns("expenses")}
-    if "include_in_balance" not in expense_columns:
-        db.session.execute(
-            text(
-                "ALTER TABLE expenses "
-                "ADD COLUMN include_in_balance BOOLEAN NOT NULL DEFAULT 1"
+    if "expenses" in tables:
+        expense_columns = {column["name"] for column in inspector.get_columns("expenses")}
+        if "include_in_balance" not in expense_columns:
+            db.session.execute(
+                text(
+                    "ALTER TABLE expenses "
+                    "ADD COLUMN include_in_balance BOOLEAN NOT NULL DEFAULT 1"
+                )
             )
-        )
-        db.session.commit()
+            db.session.commit()
+        if "unit_type" not in expense_columns:
+            db.session.execute(
+                text("ALTER TABLE expenses ADD COLUMN unit_type VARCHAR(20) NULL")
+            )
+            db.session.commit()
+        if "unit_quantity" not in expense_columns:
+            db.session.execute(
+                text("ALTER TABLE expenses ADD COLUMN unit_quantity DECIMAL(12, 2) NULL")
+            )
+            db.session.commit()
+
+    if "sales" in tables:
+        sale_columns = {column["name"] for column in inspector.get_columns("sales")}
+        if "sold_to" not in sale_columns:
+            db.session.execute(
+                text("ALTER TABLE sales ADD COLUMN sold_to VARCHAR(120) NULL")
+            )
+            db.session.commit()
+        if "include_in_totals" not in sale_columns:
+            db.session.execute(
+                text(
+                    "ALTER TABLE sales "
+                    "ADD COLUMN include_in_totals BOOLEAN NOT NULL DEFAULT 1"
+                )
+            )
+            db.session.commit()
+        if "unit_type" not in sale_columns:
+            db.session.execute(
+                text("ALTER TABLE sales ADD COLUMN unit_type VARCHAR(20) NULL")
+            )
+            db.session.commit()
 
 
 def create_app(config_class=Config):
