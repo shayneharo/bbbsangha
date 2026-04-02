@@ -77,16 +77,18 @@ def validate_expense_form(form):
 
     expense_type_id = (form.get("expense_type_id") or "").strip()
     employee_id = (form.get("employee_id") or "").strip()
+    employee = None
+
+    if employee_id:
+        employee = Employee.query.get(employee_id)
+        if not employee:
+            errors["employee_id"] = "Employee not found."
 
     if is_salary:
         if not employee_id:
             errors["employee_id"] = "Select an employee for salary records."
         else:
-            employee = Employee.query.get(employee_id)
-            if not employee:
-                errors["employee_id"] = "Employee not found."
-            else:
-                cleaned["employee"] = employee
+            cleaned["employee"] = employee
         cleaned["expense_type"] = None
     else:
         if not expense_type_id:
@@ -97,7 +99,7 @@ def validate_expense_form(form):
                 errors["expense_type_id"] = "Expense type not found."
             else:
                 cleaned["expense_type"] = expense_type
-        cleaned["employee"] = None
+        cleaned["employee"] = employee
 
     note = _clean_text(form.get("note"), 2000)
     cleaned["note"] = note or None
